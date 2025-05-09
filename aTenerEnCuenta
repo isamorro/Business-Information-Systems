@@ -1,0 +1,5 @@
+- en frontend/tienda-frontend: npm run dev
+- en backend/: python app.py
+- para el acceso a MySQL: sudo mysql
+
+* La tienda-virtual esta conectada con un nuevo usuario (ver backend/db_config.py), para no compartir las conntraseñas de sudo
