@@ -1,3 +1,6 @@
+// Función que recibe un producto y la función onAddToCart que se ejecutará cuando se haga click en 
+// "Añadir al carrito"
+
 function ProductCard({ producto, onAddToCart }) {
 
   return (
@@ -16,6 +19,7 @@ function ProductCard({ producto, onAddToCart }) {
     <p>{producto.categoria}</p>
 
     <button
+      /* Al hacer click se llama a la función onAddToCart */
       onClick={() => onAddToCart(producto)}
       style={{
         marginTop: '0.5rem',

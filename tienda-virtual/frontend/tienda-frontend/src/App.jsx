@@ -2,13 +2,18 @@ import { useState } from 'react';
 import Home from './pages/Home';
 
 function App() {
+  
+  // Array que almacenará los productos del carrito
   const [carrito, setCarrito] = useState([]);
+  // Almacena la categoría para filtrar productos
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState('Todas');
 
+  // Añade un producto al carrito
   const handleAddToCart = producto => {
     setCarrito(prev => [...prev, producto]);
   };
 
+  // Vacía completamente el carrito
   const handleClearCart = () => {
     setCarrito([]);
   };
@@ -31,7 +36,7 @@ function App() {
         </div>
       </header>
 
-      {/* Contenido principal: categorías + productos + carrito */}
+      {/* Contenido principal */}
       <div style={{ display: 'flex', flex: 1 }}>
 
         {/* Menú de categorías */}
@@ -88,6 +93,7 @@ function App() {
               </li>
             ))}
           </ul>
+          {/* Calcula el total del carrito */}
           <p><b>Total:</b> {carrito.reduce((acc, item) => acc + parseFloat(item.precio), 0).toFixed(2)} €</p>
           <button
             onClick={handleClearCart}
@@ -102,6 +108,7 @@ function App() {
             }}
           >
             Vaciar carrito
+            
           </button>
         </aside>
       </div>
