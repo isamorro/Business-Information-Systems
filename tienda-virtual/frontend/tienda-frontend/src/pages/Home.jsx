@@ -4,7 +4,7 @@ import ProductCard from '../components/ProductCard';
 
 
 // Recibe función para agregar al carrito y categoría seleccionada
-function Home({ onAddToCart, categoriaSeleccionada }) {
+function Home({ onAddToCart, categoriaSeleccionada, busqueda }) {
 
   // Almacenará los productos obtenidos desde la base de datos
   const [productos, setProductos] = useState([]);
@@ -16,9 +16,12 @@ function Home({ onAddToCart, categoriaSeleccionada }) {
   }, []);
 
   // Si la categoría es Todas no filtra, en otro caso filtra por categoría
-  const productosFiltrados = productos.filter(producto =>
-    categoriaSeleccionada === 'Todas' || producto.categoria === categoriaSeleccionada
-  );
+  const productosFiltrados = productos.filter(producto => {
+  const coincideCategoria = categoriaSeleccionada === 'Todas' || producto.categoria === categoriaSeleccionada;
+  const coincideBusqueda = producto.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
+                           producto.categoria.toLowerCase().includes(busqueda.toLowerCase());
+  return coincideCategoria && coincideBusqueda;
+  });
 
   return (
 
