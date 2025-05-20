@@ -72,10 +72,40 @@ function App() {
           ))}
         </aside>
 
-        {/* Productos */}
         <main style={{ flex: 1, overflowY: 'auto', padding: '2rem' }}>
-          <Home onAddToCart={handleAddToCart} categoriaSeleccionada={categoriaSeleccionada} />
+          {/* Buscador arriba de los productos */}
+          <div style={{
+            marginBottom: '1rem',
+            display: 'flex',
+            backgroundColor: '#f0f0f0',
+            border: '2px solid #6DBB4B',
+            borderRadius: '8px',
+            padding: '0.25rem 0.75rem',
+          }}>
+            <input
+              type="text"
+              placeholder="🔎 Buscar productos ecológicos..."
+              value={busqueda}
+              onChange={(e) => setBusqueda(e.target.value)}
+              style={{
+                flex: 1,
+                border: 'none',
+                outline: 'none',
+                backgroundColor: 'transparent',
+                fontSize: '1rem',
+                color: '#333'
+              }}
+            />
+          </div>
+
+          {/* Productos */}
+          <Home 
+            onAddToCart={handleAddToCart} 
+            categoriaSeleccionada={categoriaSeleccionada} 
+            busqueda={busqueda}
+          />
         </main>
+
 
         {/* Carrito */}
         <aside style={{
@@ -113,21 +143,6 @@ function App() {
             
           </button>
         </aside>
-        <div style={{ marginBottom: '1rem' }}>
-          <input
-            type="text"
-            placeholder="Buscar productos..."
-            value={busqueda}
-            onChange={(e) => setBusqueda(e.target.value)}
-            style={{
-              width: '100%',
-              padding: '0.5rem',
-              borderRadius: '4px',
-              border: '1px solid #ccc',
-              fontSize: '1rem'
-            }}
-          />
-        </div>
         
       </div>
     </div>
