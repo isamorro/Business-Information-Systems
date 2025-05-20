@@ -25,7 +25,11 @@ function Home({ onAddToCart, categoriaSeleccionada, busqueda }) {
 
   return (
 
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', padding: '2rem' }}>
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
+        gap: '1.5rem',
+      }}>
       {productosFiltrados.map(producto => (
         <ProductCard key={producto.id} producto={producto} onAddToCart={onAddToCart} />
       ))}
