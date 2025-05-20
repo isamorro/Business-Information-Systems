@@ -18,6 +18,8 @@ function App() {
     setCarrito([]);
   };
 
+  const [busqueda, setBusqueda] = useState('');
+
   return (
     <div style={{ height: '100vh', width: '100%', display: 'flex', flexDirection: 'column' }}>
 
@@ -72,7 +74,11 @@ function App() {
 
         {/* Productos */}
         <main style={{ flex: 1, overflowY: 'auto', padding: '2rem' }}>
-          <Home onAddToCart={handleAddToCart} categoriaSeleccionada={categoriaSeleccionada} />
+        <Home 
+          onAddToCart={handleAddToCart} 
+          categoriaSeleccionada={categoriaSeleccionada} 
+          busqueda={busqueda}
+        />
         </main>
 
         {/* Carrito */}
@@ -111,6 +117,22 @@ function App() {
             
           </button>
         </aside>
+        <div style={{ marginBottom: '1rem' }}>
+          <input
+            type="text"
+            placeholder="Buscar productos..."
+            value={busqueda}
+            onChange={(e) => setBusqueda(e.target.value)}
+            style={{
+              width: '100%',
+              padding: '0.5rem',
+              borderRadius: '4px',
+              border: '1px solid #ccc',
+              fontSize: '1rem'
+            }}
+          />
+        </div>
+        
       </div>
     </div>
   );
