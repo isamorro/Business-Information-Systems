@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import Home from './pages/Home';
+import Registro from './registro';
 
-function App() {
+function App(irARegistro) {
   
   // Array que almacenará los productos del carrito
   const [carrito, setCarrito] = useState([]);
@@ -20,6 +21,15 @@ function App() {
 
   const [busqueda, setBusqueda] = useState('');
 
+  const handleMostrarRegistro = () => {
+    setVista('registro');
+  };
+
+  // 👉 Si estamos en la vista de registro, muestra solo el formulario
+  if (vista === 'registro') {
+    return <Registro onVolver={() => setVista('home')} />;
+  }
+
   return (
     <div style={{ height: '100vh', width: '100%', display: 'flex', flexDirection: 'column' }}>
 
@@ -36,6 +46,23 @@ function App() {
         <div style={{ flex: 1, textAlign: 'center' }}>
           <h1 style={{ margin: 0, fontSize: '2rem', color: 'white' }}>EcoFit</h1>
         </div>
+
+        <div style={{ height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      <button
+          onClick={handleMostrarRegistro}
+          style={{
+            padding: '0.75rem 1.25rem',
+            fontSize: '1rem',
+            backgroundColor: 'white',
+            color: '#6DBB4B',
+            border: '2px solid #6DBB4B',
+            borderRadius: '8px',
+            cursor: 'pointer'
+          }}
+        >
+          Registro
+        </button>
+    </div>
       </header>
 
       {/* Contenido principal */}
