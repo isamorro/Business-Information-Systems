@@ -30,7 +30,7 @@ function ProductCard({ producto, onAddToCart }) {
         borderRadius: '6px',
         cursor: 'pointer',
         fontWeight: 'bold',
-        transition: 'background-color 0.3s'
+        transition: 'background-color 0.3s',
       }}
       onMouseOver={e => (e.target.style.backgroundColor = '#5AA03F')}
       onMouseOut={e => (e.target.style.backgroundColor = '#6DBB4B')}
