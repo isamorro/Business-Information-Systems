@@ -1,34 +1,33 @@
 import { useState } from 'react';
 import Home from './pages/Home';
-import Registro from './registro';
 
-function App(irARegistro) {
-  
-  // Array que almacenará los productos del carrito
+function App() {
   const [carrito, setCarrito] = useState([]);
-  // Almacena la categoría para filtrar productos
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState('Todas');
+  const [busqueda, setBusqueda] = useState('');
 
-  // Añade un producto al carrito
+  // Estado para el formulario de registro
+  const [nombre, setNombre] = useState('');
+  const [email, setEmail] = useState('');
+  const [contrasena, setContrasena] = useState('');
+  const [registroExitoso, setRegistroExitoso] = useState(false);
+
   const handleAddToCart = producto => {
     setCarrito(prev => [...prev, producto]);
   };
 
-  // Vacía completamente el carrito
   const handleClearCart = () => {
     setCarrito([]);
   };
 
-  const [busqueda, setBusqueda] = useState('');
-
-  const handleMostrarRegistro = () => {
-    setVista('registro');
+  const handleRegistroSubmit = (e) => {
+    e.preventDefault();
+    console.log({ nombre, email, contrasena });
+    setRegistroExitoso(true);
+    setNombre('');
+    setEmail('');
+    setContrasena('');
   };
-
-  // 👉 Si estamos en la vista de registro, muestra solo el formulario
-  if (vista === 'registro') {
-    return <Registro onVolver={() => setVista('home')} />;
-  }
 
   return (
     <div style={{ height: '100vh', width: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -46,23 +45,6 @@ function App(irARegistro) {
         <div style={{ flex: 1, textAlign: 'center' }}>
           <h1 style={{ margin: 0, fontSize: '2rem', color: 'white' }}>EcoFit</h1>
         </div>
-
-        <div style={{ height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-      <button
-          onClick={handleMostrarRegistro}
-          style={{
-            padding: '0.75rem 1.25rem',
-            fontSize: '1rem',
-            backgroundColor: 'white',
-            color: '#6DBB4B',
-            border: '2px solid #6DBB4B',
-            borderRadius: '8px',
-            cursor: 'pointer'
-          }}
-        >
-          Registro
-        </button>
-    </div>
       </header>
 
       {/* Contenido principal */}
@@ -100,6 +82,7 @@ function App(irARegistro) {
         </aside>
 
         <main style={{ flex: 1, overflowY: 'auto', padding: '2rem' }}>
+
           {/* Buscador arriba de los productos */}
           <div style={{
             marginBottom: '1rem',
@@ -125,14 +108,72 @@ function App(irARegistro) {
             />
           </div>
 
+          {/* Formulario de registro */}
+          <div style={{
+            backgroundColor: '#e8f5e9',
+            border: '1px solid #ccc',
+            borderRadius: '8px',
+            padding: '1rem',
+            marginBottom: '2rem'
+          }}>
+            <h2>📝 Registro de Cliente</h2>
+            <form onSubmit={handleRegistroSubmit}>
+              <div style={{ marginBottom: '0.5rem' }}>
+                <label>Nombre:</label><br />
+                <input
+                  type="text"
+                  value={nombre}
+                  onChange={(e) => setNombre(e.target.value)}
+                  required
+                  style={{ width: '100%', padding: '0.5rem' }}
+                />
+              </div>
+              <div style={{ marginBottom: '0.5rem' }}>
+                <label>Email:</label><br />
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  style={{ width: '100%', padding: '0.5rem' }}
+                />
+              </div>
+              <div style={{ marginBottom: '0.5rem' }}>
+                <label>Contraseña:</label><br />
+                <input
+                  type="password"
+                  value={contrasena}
+                  onChange={(e) => setContrasena(e.target.value)}
+                  required
+                  style={{ width: '100%', padding: '0.5rem' }}
+                />
+              </div>
+              <button
+                type="submit"
+                style={{
+                  backgroundColor: '#6DBB4B',
+                  color: 'white',
+                  padding: '0.5rem 1rem',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer'
+                }}
+              >
+                Registrarse
+              </button>
+            </form>
+            {registroExitoso && (
+              <p style={{ color: 'green', marginTop: '1rem' }}>¡Registro exitoso!</p>
+            )}
+          </div>
+
           {/* Productos */}
-          <Home 
-            onAddToCart={handleAddToCart} 
-            categoriaSeleccionada={categoriaSeleccionada} 
+          <Home
+            onAddToCart={handleAddToCart}
+            categoriaSeleccionada={categoriaSeleccionada}
             busqueda={busqueda}
           />
         </main>
-
 
         {/* Carrito */}
         <aside style={{
@@ -152,7 +193,6 @@ function App(irARegistro) {
               </li>
             ))}
           </ul>
-          {/* Calcula el total del carrito */}
           <p><b>Total:</b> {carrito.reduce((acc, item) => acc + parseFloat(item.precio), 0).toFixed(2)} €</p>
           <button
             onClick={handleClearCart}
@@ -167,10 +207,9 @@ function App(irARegistro) {
             }}
           >
             Vaciar carrito
-            
           </button>
         </aside>
-        
+
       </div>
     </div>
   );
