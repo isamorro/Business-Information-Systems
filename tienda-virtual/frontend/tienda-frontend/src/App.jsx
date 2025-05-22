@@ -12,9 +12,27 @@ function App() {
   const [contrasena, setContrasena] = useState('');
   const [registroExitoso, setRegistroExitoso] = useState(false);
 
-  const handleAddToCart = producto => {
-    setCarrito(prev => [...prev, producto]);
-  };
+  const handleAddToCart = async (producto) => {
+  try {
+    const res = await fetch('http://localhost:5000/api/agregar_producto_carrito', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        idProducto: producto.idProducto,
+        cantidad: 1
+      })
+    });
+
+    const data = await res.json();
+    console.log(data.mensaje);
+    alert('Producto añadido al carrito');
+    
+    // Opcional: también lo puedes mantener en el estado local
+    setCarrito(prev => [...prev, { ...producto, cantidad: 1 }]);
+  } catch (error) {
+    console.error('Error al añadir al carrito:', error);
+  }
+};
 
   const handleClearCart = () => {
     setCarrito([]);
@@ -28,6 +46,27 @@ function App() {
     setEmail('');
     setContrasena('');
   };
+
+  const handleGuardarCarrito = async () => {
+  const carritoFormateado = carrito.map(item => ({
+    idProducto: item.idProducto,
+    cantidad: item.cantidad || 1  // Puedes añadir selector de cantidad más adelante
+  }));
+
+  try {
+    const res = await fetch('http://localhost:5000/api/guardar_carrito', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(carritoFormateado)
+    });
+
+    const data = await res.json();
+    alert(`Carrito guardado con ID: ${data.idCarrito}`);
+    setCarrito([]); // Limpiar carrito
+  } catch (error) {
+    console.error('Error al guardar el carrito:', error);
+  }
+};
 
   return (
     <div style={{ height: '100vh', width: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -194,6 +233,7 @@ function App() {
             ))}
           </ul>
           <p><b>Total:</b> {carrito.reduce((acc, item) => acc + parseFloat(item.precio), 0).toFixed(2)} €</p>
+
           <button
             onClick={handleClearCart}
             style={{
