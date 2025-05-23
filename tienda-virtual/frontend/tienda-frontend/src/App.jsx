@@ -11,6 +11,8 @@ function App() {
   const [nombre, setNombre] = useState('');
   const [email, setEmail] = useState('');
   const [contrasena, setContrasena] = useState('');
+  const [direccion, setDireccion] = useState("");
+  const [tarjeta, setTarjeta] = useState("");
 
   const handleAddToCart = (producto) => {
     setCarrito(prev => [...prev, { ...producto, cantidad: 1 }]);
@@ -48,6 +50,8 @@ function App() {
       setNombre('');
       setEmail('');
       setContrasena('');
+      setDireccion("");
+      setTarjeta("");
 
 
     } catch (error) {
@@ -87,6 +91,8 @@ function App() {
       setNombre('');
       setEmail('');
       setContrasena('');
+      setDireccion("");
+      setTarjeta("");
 
     } catch (error) {
       console.error('Error al registrar venta:', error);
@@ -272,6 +278,7 @@ function App() {
                   }}
                 />
               </div>
+
               <div style={{ marginBottom: '1rem' }}>
                 <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '0.25rem' }}>Contraseña:</label>
                 <input
@@ -287,6 +294,39 @@ function App() {
                   }}
                 />
               </div>
+
+              <div style={{ marginBottom: '1rem' }}>
+                <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '0.25rem' }}>Dirección:</label>
+                <input
+                  type="textArea"
+                  value={direccion}
+                  onChange={(e) => setDireccion(e.target.value)}
+                  placeholder="Calle, número, cp, ciudad"
+                  style={{
+                    width: '80%',
+                    padding: '0.5rem',
+                    borderRadius: '6px',
+                    border: '1px solid #ccc'
+                  }}
+                />
+              </div>
+
+              <div style={{ marginBottom: '1rem' }}>
+                <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '0.25rem' }}>Tarjeta:</label>
+                <input
+                  type="password"
+                  value={contrasena}
+                  onChange={(e) => setTarjeta(e.target.value)}
+                  placeholder="********"
+                  style={{
+                    width: '80%',
+                    padding: '0.5rem',
+                    borderRadius: '6px',
+                    border: '1px solid #ccc'
+                  }}
+                />
+              </div>
+
 
               <button
                 onClick={(e) => {
