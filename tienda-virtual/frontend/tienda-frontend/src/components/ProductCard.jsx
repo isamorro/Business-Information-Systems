@@ -1,5 +1,3 @@
-// Función que recibe un producto y la función onAddToCart que se ejecutará cuando se haga click en 
-// "Añadir al carrito"
 
 function ProductCard({ producto, onAddToCart }) {
 
@@ -13,13 +11,15 @@ function ProductCard({ producto, onAddToCart }) {
       style={{ width: '100%', height: '150px', objectFit: 'cover', borderRadius: '4px' }}
     />
 
+    {/* Información de los porductos mostrada el la tienda virtual */}
+
     <h3>{producto.nombre}</h3>
     <p>{producto.precio} €</p>
     <p>{producto.peso_o_resistencia}</p>
     <p>{producto.categoria}</p>
 
+    {/* Botón que permite añadir el producto al carrito */}
     <button
-      /* Al hacer click se llama a la función onAddToCart */
       onClick={() => onAddToCart(producto)}
       style={{
         marginTop: '0.5rem',
@@ -32,6 +32,7 @@ function ProductCard({ producto, onAddToCart }) {
         fontWeight: 'bold',
         transition: 'background-color 0.3s'
       }}
+      // Cambio de color del botón cuando se pone el ratón por encima
       onMouseOver={e => (e.target.style.backgroundColor = '#5AA03F')}
       onMouseOut={e => (e.target.style.backgroundColor = '#6DBB4B')}
     >

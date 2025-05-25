@@ -3,17 +3,17 @@ import Home from './pages/Home';
 
 function App() {
 
+  // Estado local de las componentes  
   const [carrito, setCarrito] = useState([]);
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState('Todas');
   const [busqueda, setBusqueda] = useState('');
-
-  // Estado para el formulario de registro
   const [nombre, setNombre] = useState('');
   const [email, setEmail] = useState('');
   const [contrasena, setContrasena] = useState('');
   const [direccion, setDireccion] = useState("");
   const [tarjeta, setTarjeta] = useState("");
 
+  // Añade al carrito un nuevo producto  
   const handleAddToCart = (producto) => {
     setCarrito(prev => [...prev, { ...producto, cantidad: 1 }]);
   };
@@ -28,10 +28,10 @@ function App() {
 
   const handleGuardarCarrito = async () => {
     
-    if (!nombre.trim()) {
-      alert("Por favor, introduce tu nombre antes de guardar el carrito.");
+    if (!nombre.trim() || !email.trim() || !contrasena.trim() || !direccion.trim() || !tarjeta.trim()) {
+      alert("Por favor, completa todos los campos antes de continuar.");
       return;
-    }
+    }    
   
     const carritoFormateado = carrito.map(item => ({
       idProducto: item.idProducto,
@@ -62,10 +62,10 @@ function App() {
 
   const handleRegistrarVenta = async () => {
 
-    if (!nombre.trim()) {
-      alert("Por favor, introduce tu nombre antes de registrar la venta.");
+    if (!nombre.trim() || !email.trim() || !contrasena.trim() || !direccion.trim() || !tarjeta.trim()) {
+      alert("Por favor, completa todos los campos antes de continuar.");
       return;
-    }
+    }    
   
     const carritoFormateado = carrito.map(item => ({
       idProducto: item.idProducto,
@@ -99,8 +99,6 @@ function App() {
     }
   };
   
-  
-
   return (
     <div style={{ height: '100vh', width: '100%', display: 'flex', flexDirection: 'column' }}>
       {/* Header */}
@@ -315,7 +313,7 @@ function App() {
                 <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '0.25rem' }}>Tarjeta:</label>
                 <input
                   type="password"
-                  value={contrasena}
+                  value={tarjeta}
                   onChange={(e) => setTarjeta(e.target.value)}
                   placeholder="********"
                   style={{

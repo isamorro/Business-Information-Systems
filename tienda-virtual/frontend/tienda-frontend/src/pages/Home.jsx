@@ -17,10 +17,10 @@ function Home({ onAddToCart, categoriaSeleccionada, busqueda }) {
 
   // Si la categoría es Todas no filtra, en otro caso filtra por categoría
   const productosFiltrados = productos.filter(producto => {
-  const coincideCategoria = categoriaSeleccionada === 'Todas' || producto.categoria === categoriaSeleccionada;
-  const coincideBusqueda = producto.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
-                           producto.categoria.toLowerCase().includes(busqueda.toLowerCase());
-  return coincideCategoria && coincideBusqueda;
+    const coincideCategoria = categoriaSeleccionada === 'Todas' || producto.categoria === categoriaSeleccionada;
+    const coincideBusqueda = producto.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
+                            producto.categoria.toLowerCase().includes(busqueda.toLowerCase());
+    return coincideCategoria && coincideBusqueda;
   });
 
   return (
@@ -30,9 +30,11 @@ function Home({ onAddToCart, categoriaSeleccionada, busqueda }) {
         gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
         gap: '1.5rem',
       }}>
+
       {productosFiltrados.map(producto => (
         <ProductCard key={producto.id} producto={producto} onAddToCart={onAddToCart} />
       ))}
+      
     </div>
     
   );
