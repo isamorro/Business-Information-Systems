@@ -15,37 +15,47 @@ function App() {
 
   // Añade al carrito un nuevo producto  
   const handleAddToCart = (producto) => {
+    // Añade los que ya estaban y añade el nuevo producto con cantidad 1
     setCarrito(prev => [...prev, { ...producto, cantidad: 1 }]);
   };
 
+  // Limpiamos carrito
   const handleClearCart = () => {
     setCarrito([]);
   };
 
+  // Elimina un producto del carrito
   const handleRemoveFromCart = (indexToRemove) => {
     setCarrito(prev => prev.filter((_, index) => index !== indexToRemove));
   };  
 
+  // Guardamos el carrito
   const handleGuardarCarrito = async () => {
     
+    // Controla que todos los campos estén rellenos
     if (!nombre.trim() || !email.trim() || !contrasena.trim() || !direccion.trim() || !tarjeta.trim()) {
       alert("Por favor, completa todos los campos antes de continuar.");
       return;
     }    
   
+    // Toma tan solo los datos necesarios que se almacenan en la BD
     const carritoFormateado = carrito.map(item => ({
       idProducto: item.idProducto,
       cantidad: item.cantidad || 1
     }));
   
     try {
+      // Hacemos solicitud HTTP POST al backend
       const res = await fetch('http://localhost:5000/api/guardar_carrito', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ nombre, carrito: carritoFormateado })
       });
   
+      // Esperamos a la respuesta edl serevidor
       const data = await res.json();
+
+      // Vaciamos los campos del formulario
       setCarrito([]);
       setNombre('');
       setEmail('');
@@ -59,7 +69,7 @@ function App() {
     }
   };
   
-
+  // Resgistramos la venta
   const handleRegistrarVenta = async () => {
 
     if (!nombre.trim() || !email.trim() || !contrasena.trim() || !direccion.trim() || !tarjeta.trim()) {
@@ -100,7 +110,9 @@ function App() {
   };
   
   return (
+
     <div style={{ height: '100vh', width: '100%', display: 'flex', flexDirection: 'column' }}>
+      
       {/* Header */}
       <header style={{
         background: '#6DBB4B',
@@ -118,6 +130,7 @@ function App() {
 
       {/* Contenido principal */}
       <div style={{ display: 'flex', flex: 1 }}>
+
         {/* Menú de categorías */}
         <aside style={{
           width: '200px',
@@ -126,6 +139,7 @@ function App() {
           borderRight: '1px solid #ccc',
           boxSizing: 'border-box'
         }}>
+
           <h3>Categorías</h3>
           {['Todas', 'Fuerza y Tonificación', 'Cardio y Agilidad', 'Yoga y Bienestar'].map(cat => (
             <button
@@ -328,6 +342,7 @@ function App() {
 
               <button
                 onClick={(e) => {
+                  // Evita que el botón recargue la página
                   e.preventDefault();
                   handleGuardarCarrito();
                 }}

@@ -3,13 +3,17 @@ from flask_cors import CORS
 import mysql.connector
 from db_config import db_config
 
+# Iniciamos la aplicación
 app = Flask(__name__)
 CORS(app)
 
-# Obtener productos (ya lo tenías)
+# Obtenemos productos (pedimos a la BD)
 @app.route('/api/productos', methods=['GET'])
 def get_productos():
+
+    # Abrimos conexión a la base de datos
     conn = mysql.connector.connect(**db_config)
+    # Obtenemos los resultados como diccionarios (clave-valor)
     cursor = conn.cursor(dictionary=True)
     cursor.execute("""
         SELECT p.idProducto, p.nombre, p.precio, p.imagen_url, p.cantidad,
@@ -22,30 +26,36 @@ def get_productos():
         LEFT JOIN color co ON p.color = co.id_color
     """)
 
+    # Obtenemos datos en productos
     productos = cursor.fetchall()
+    # Cerramos conexión
     cursor.close()
     conn.close()
+    # Devolvemos los datos de productos conn formato JSON
     return jsonify(productos)
 
-# Guardar carrito con detalles (nueva ruta)
-
+# Guardar carrito con detalles (guardamos en la BD)
 @app.route('/api/guardar_carrito', methods=['POST'])
 def guardar_carrito():
 
+    # Obtenemos datos
     datos = request.json 
     nombre = datos.get('nombre')
     detalles = datos.get('carrito')
 
+    # Lanzamos error si no tenemos alguno de los datos
     if not nombre or not detalles:
         return jsonify({'error': 'Nombre y carrito son obligatorios'}), 400
 
     conn = mysql.connector.connect(**db_config)
     cursor = conn.cursor()
 
+    # Creamos un nuevo registro en la tabla carrito
     cursor.execute("INSERT INTO carrito (nombre_usuario, estado) VALUES (%s, 'activo')", (nombre,))
     conn.commit()
     id_carrito = cursor.lastrowid
 
+    # Insertamos cada producto en la tabla detallesCarrito
     for item in detalles:
         cursor.execute("""
             INSERT INTO detallesCarrito (idCarrito, idProducto, cantidad)
@@ -58,8 +68,7 @@ def guardar_carrito():
 
     return jsonify({'mensaje': 'Carrito guardado con éxito', 'idCarrito': id_carrito})
 
-
-
+# Guarda la venta
 @app.route('/api/registrar_venta', methods=['POST'])
 def registrar_venta():
 
