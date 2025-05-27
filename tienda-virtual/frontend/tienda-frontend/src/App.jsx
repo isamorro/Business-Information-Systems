@@ -12,6 +12,11 @@ function App() {
   const [contrasena, setContrasena] = useState('');
   const [direccion, setDireccion] = useState("");
   const [tarjeta, setTarjeta] = useState("");
+  const [mostrarFormulario, setMostrarFormulario] = useState(false);
+  const [compraRealizada, setCompraRealizada] = useState(false);
+  const [resumenNombre, setResumenNombre] = useState('');
+  const [resumenCarrito, setResumenCarrito] = useState([]);
+
 
   // Añade al carrito un nuevo producto  
   const handleAddToCart = (producto) => {
@@ -28,46 +33,6 @@ function App() {
   const handleRemoveFromCart = (indexToRemove) => {
     setCarrito(prev => prev.filter((_, index) => index !== indexToRemove));
   };  
-
-  // Guardamos el carrito
-  const handleGuardarCarrito = async () => {
-    
-    // Controla que todos los campos estén rellenos
-    if (!nombre.trim() || !email.trim() || !contrasena.trim() || !direccion.trim() || !tarjeta.trim()) {
-      alert("Por favor, completa todos los campos antes de continuar.");
-      return;
-    }    
-  
-    // Toma tan solo los datos necesarios que se almacenan en la BD
-    const carritoFormateado = carrito.map(item => ({
-      idProducto: item.idProducto,
-      cantidad: item.cantidad || 1
-    }));
-  
-    try {
-      // Hacemos solicitud HTTP POST al backend
-      const res = await fetch('http://localhost:5000/api/guardar_carrito', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nombre, carrito: carritoFormateado })
-      });
-  
-      // Esperamos a la respuesta edl serevidor
-      const data = await res.json();
-
-      // Vaciamos los campos del formulario
-      setCarrito([]);
-      setNombre('');
-      setEmail('');
-      setContrasena('');
-      setDireccion("");
-      setTarjeta("");
-
-
-    } catch (error) {
-      console.error('Error al guardar el carrito:', error);
-    }
-  };
   
   // Resgistramos la venta
   const handleRegistrarVenta = async () => {
@@ -97,12 +62,15 @@ function App() {
   
       const data = await res.json();
       console.log('Venta registrada:', data);
+      setResumenNombre(nombre);
+      setResumenCarrito(carrito);
       setCarrito([]);
       setNombre('');
       setEmail('');
       setContrasena('');
       setDireccion("");
       setTarjeta("");
+      setCompraRealizada(true);
 
     } catch (error) {
       console.error('Error al registrar venta:', error);
@@ -246,150 +214,194 @@ function App() {
             Vaciar carrito
           </button>
 
-          {/* Formulario de registro */}
+          <button
+            onClick={() => setMostrarFormulario(true)}
+            style={{
+              backgroundColor: '#388e3c',
+              color: 'white',
+              padding: '0.5rem 1rem',
+              border: 'none',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              width: '100%',
+              fontWeight: 'bold',
+              marginTop: '1rem'
+            }}
+          >
+            Finalizar Compra
+          </button>
+
+        </aside>
+      </div>
+
+      {mostrarFormulario && (
+        <div style={{
+          position: 'fixed',
+          top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.4)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000
+        }}>
           <div style={{
-            backgroundColor: '#f4fdf4',
-            border: '1px solid #c5e1a5',
-            borderRadius: '12px',
-            padding: '1rem',
-            marginTop: '2rem'
+            backgroundColor: '#ffffff',
+            padding: '2rem',
+            borderRadius: '16px',
+            width: '90%',
+            maxWidth: '450px',
+            boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
+            position: 'relative',
+            fontFamily: 'sans-serif'
           }}>
-            <h3 style={{ color: '#388e3c', marginBottom: '1rem', textAlign: 'center' }}>
-              ¡Rellene el formulario para terminar la compra!
-            </h3>
+            <button
+              onClick={() => setMostrarFormulario(false)}
+              style={{
+                position: 'absolute',
+                top: '1rem',
+                right: '1rem',
+                fontSize: '1.5rem',
+                border: 'none',
+                background: 'transparent',
+                color: '#888',
+                cursor: 'pointer'
+              }}
+              aria-label="Cerrar"
+            >
+              &times;
+            </button>
 
-            <div>
-              <div style={{ marginBottom: '0.75rem' }}>
-                <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '0.25rem' }}>Nombre:</label>
-                <input
-                  type="text"
-                  value={nombre}
-                  onChange={(e) => setNombre(e.target.value)}
-                  placeholder="Tu nombre"
-                  style={{
-                    width: '80%',
-                    padding: '0.5rem',
-                    borderRadius: '6px',
-                    border: '1px solid #ccc'
-                  }}
-                />
-              </div>
-            
-              <div style={{ marginBottom: '0.75rem' }}>
-                <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '0.25rem' }}>Email:</label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="correo@ejemplo.com"
-                  style={{
-                    width: '80%',
-                    padding: '0.5rem',
-                    borderRadius: '6px',
-                    border: '1px solid #ccc'
-                  }}
-                />
-              </div>
+            <h2 style={{
+              textAlign: 'center',
+              marginBottom: '1.5rem',
+              fontWeight: '600',
+              color: '#2e7d32'
+            }}>
+              Registro del usuario
+            </h2>
 
-              <div style={{ marginBottom: '1rem' }}>
-                <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '0.25rem' }}>Contraseña:</label>
-                <input
-                  type="password"
-                  value={contrasena}
-                  onChange={(e) => setContrasena(e.target.value)}
-                  placeholder="••••••••"
-                  style={{
-                    width: '80%',
-                    padding: '0.5rem',
-                    borderRadius: '6px',
-                    border: '1px solid #ccc'
-                  }}
-                />
-              </div>
-
-              <div style={{ marginBottom: '1rem' }}>
-                <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '0.25rem' }}>Dirección:</label>
-                <input
-                  type="textArea"
-                  value={direccion}
-                  onChange={(e) => setDireccion(e.target.value)}
-                  placeholder="Calle, número, cp, ciudad"
-                  style={{
-                    width: '80%',
-                    padding: '0.5rem',
-                    borderRadius: '6px',
-                    border: '1px solid #ccc'
-                  }}
-                />
-              </div>
-
-              <div style={{ marginBottom: '1rem' }}>
-                <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '0.25rem' }}>Tarjeta:</label>
-                <input
-                  type="password"
-                  value={tarjeta}
-                  onChange={(e) => setTarjeta(e.target.value)}
-                  placeholder="********"
-                  style={{
-                    width: '80%',
-                    padding: '0.5rem',
-                    borderRadius: '6px',
-                    border: '1px solid #ccc'
-                  }}
-                />
-              </div>
-
+            <form onSubmit={(e) => { e.preventDefault(); handleRegistrarVenta(); }}>
+              {[
+                { label: "Nombre", value: nombre, onChange: setNombre },
+                { label: "Email", value: email, onChange: setEmail, type: "email" },
+                { label: "Contraseña", value: contrasena, onChange: setContrasena, type: "password" },
+                { label: "Dirección", value: direccion, onChange: setDireccion },
+                { label: "Tarjeta", value: tarjeta, onChange: setTarjeta, type: "password" }
+              ].map((field, idx) => (
+                <div key={idx} style={{ marginBottom: '1rem' }}>
+                  <label style={{ display: 'block', fontWeight: '500', marginBottom: '0.25rem' }}>{field.label}:</label>
+                  <input
+                    type={field.type || "text"}
+                    value={field.value}
+                    onChange={(e) => field.onChange(e.target.value)}
+                    required
+                    style={{
+                      width: '100%',
+                      padding: '0.6rem',
+                      borderRadius: '8px',
+                      border: '1px solid #ccc',
+                      fontSize: '1rem'
+                    }}
+                  />
+                </div>
+              ))}
 
               <button
-                onClick={(e) => {
-                  // Evita que el botón recargue la página
-                  e.preventDefault();
-                  handleGuardarCarrito();
-                }}
-              
+                type="submit"
                 style={{
-                  backgroundColor: '#6DBB4B',
+                  backgroundColor: '#43a047',
                   color: 'white',
-                  padding: '0.5rem 1rem',
+                  padding: '0.75rem',
                   border: 'none',
-                  borderRadius: '6px',
-                  cursor: 'pointer',
-                  width: '100%',
-                  fontWeight: 'bold'
-                }}
-              >
-                Guardar Carrito
-                
-              </button>
-
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleRegistrarVenta();
-                }}
-                style={{
-                  backgroundColor: '#388e3c',
-                  color: 'white',
-                  padding: '0.5rem 1rem',
-                  border: 'none',
-                  borderRadius: '6px',
+                  borderRadius: '8px',
                   cursor: 'pointer',
                   width: '100%',
                   fontWeight: 'bold',
-                  marginTop: '0.5rem'
+                  fontSize: '1rem',
+                  transition: 'background-color 0.2s ease'
+                }}
+                onMouseOver={e => e.target.style.backgroundColor = '#388e3c'}
+                onMouseOut={e => e.target.style.backgroundColor = '#43a047'}
+              >
+                Confirmar Registro
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+      {compraRealizada && (
+        <div style={{
+          position: 'fixed',
+          top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.4)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1100
+        }}>
+          <div style={{
+            backgroundColor: '#ffffff',
+            padding: '2rem',
+            borderRadius: '16px',
+            width: '90%',
+            maxWidth: '500px',
+            boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
+            position: 'relative',
+            fontFamily: 'sans-serif'
+          }}>
+            <h2 style={{ color: '#2e7d32', textAlign: 'center', marginBottom: '1rem' }}>
+              ✅ ¡Compra realizada con éxito!
+            </h2>
+
+            <h4 style={{ marginTop: '1.5rem', fontWeight: 'bold' }}>Resumen del pedido:</h4>
+            <ul style={{ listStyle: 'none', padding: 0 }}>
+              {carrito.map((item, idx) => (
+                <li key={idx} style={{ marginBottom: '0.5rem' }}>
+                  {item.nombre} - {item.precio} €
+                </li>
+              ))}
+            </ul>
+            <p style={{ textAlign: 'center' }}>
+              Gracias por tu pedido, <strong>{resumenNombre}</strong>.
+            </p>
+
+            <ul style={{ listStyle: 'none', padding: 0 }}>
+              {resumenCarrito.map((item, idx) => (
+                <li key={idx} style={{ marginBottom: '0.5rem' }}>
+                  {item.nombre} - {item.precio} €
+                </li>
+              ))}
+            </ul>
+
+            <p style={{ textAlign: 'center' }}>
+              <strong>Total:</strong> {resumenCarrito.reduce((acc, item) => acc + parseFloat(item.precio), 0).toFixed(2)} €
+            </p>
+
+
+            <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1.5rem' }}>
+              <button
+                onClick={() => {
+                  setCompraRealizada(false);
+                  setMostrarFormulario(false);
+                }}
+                style={{
+                  backgroundColor: '#2e7d32',
+                  color: 'white',
+                  padding: '0.6rem 1.2rem',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontWeight: 'bold',
+                  cursor: 'pointer'
                 }}
               >
-                Finalizar Compra
-
+                Cerrar
               </button>
-
-
             </div>
           </div>
-        </aside>
-      </div>
+        </div>
+      )}
+
     </div>
   );
 }
-
 export default App;

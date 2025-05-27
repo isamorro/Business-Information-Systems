@@ -11,6 +11,28 @@ FLUSH PRIVILEGES;
 
 USE tienda;
 
+
+-- USUARIO
+CREATE TABLE IF NOT EXISTS usuario (
+    id_usuario INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    contraseña VARCHAR(100) NOT NULL,
+    direccion VARCHAR(255),
+    nombre VARCHAR(100),
+    tarjeta VARCHAR(50)
+);
+
+
+-- VENTA
+CREATE TABLE IF NOT EXISTS venta (
+    id_venta INT AUTO_INCREMENT PRIMARY KEY,
+    fecha DATETIME NOT NULL,
+    total DECIMAL(10,2) NOT NULL,
+    id_usuario INT,
+    FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario)
+);
+
+
 -- ELIMINACIÓN DE TABLAS SI EXISTEN (en orden para evitar conflictos por claves foráneas)
 DROP TABLE IF EXISTS venta;
 DROP TABLE IF EXISTS detallesCarrito;
@@ -125,6 +147,9 @@ INSERT INTO productos (nombre, categoria, peso_o_resistencia, color, precio, ima
 ('Banda Ecológica', 1, 10, NULL, 15.99, 'img/banda_15kg.png', 10),
 ('Banda Ecológica', 1, 11, NULL, 19.99, 'img/banda_25kg.png', 10),
 ('Banda Ecológica', 1, 12, NULL, 23.99, 'img/banda_35kg.png', 10),
+('Banda Ecológica', 1, 13, NULL, 26.99, 'img/banda_45kg.png', 10),
+('Banda Ecológica', 1, 14, NULL, 29.99, 'img/banda_60kg.png', 10),
+('Rueda Abdominal Ecológica', 1, NULL, NULL, 25.99, 'img/rueda_abdominal.png', 10);
 ('Banda Ecológica', 1, 13, NULL, 26.99, 'img/banda_45kg.png', 10),
 ('Banda Ecológica', 1, 14, NULL, 29.99, 'img/banda_60kg.png', 10),
 ('Rueda Abdominal Ecológica', 1, NULL, NULL, 25.99, 'img/rueda_abdominal.png', 10);
