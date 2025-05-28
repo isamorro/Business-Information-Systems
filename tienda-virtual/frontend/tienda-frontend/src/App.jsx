@@ -76,6 +76,34 @@ function App() {
       console.error('Error al registrar venta:', error);
     }
   };
+
+  const handleRegistroUsuario = async () => {
+    if (!nombre.trim() || !email.trim() || !contrasena.trim() || !direccion.trim() || !tarjeta.trim()) {
+      alert("Por favor, completa todos los campos.");
+      return;
+    }
+  
+    try {
+      const res = await fetch('http://localhost:5000/api/registrar_usuario', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nombre, email, contrasena, direccion, tarjeta })
+      });
+  
+      const data = await res.json();
+  
+      if (data.error) {
+        alert(data.error);
+      } else {
+        alert('Registro exitoso');
+        setMostrarFormulario(false);
+      }
+    } catch (err) {
+      console.error('Error al registrar usuario:', err);
+    }
+  };
+  
+  
   
   return (
 
@@ -88,12 +116,39 @@ function App() {
         alignItems: 'center',
         height: '120px',
         padding: '0 2rem',
-        width: '100%'
+        maxWidth: '100vw'
       }}>
         <img src="/img/logo.jpeg" alt="Logo" style={{ height: '100%', objectFit: 'contain' }} />
         <div style={{ flex: 1, textAlign: 'center' }}>
           <h1 style={{ margin: 0, fontSize: '2rem', color: 'white' }}>EcoFit</h1>
         </div>
+        <div style={{
+          marginRight: '2rem',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '1rem'
+        }}>
+
+        {!nombre ? (
+          <button
+            onClick={() => setMostrarFormulario(true)}
+            style={{
+              backgroundColor: 'white',
+              color: '#2e7d32',
+              fontWeight: 'bold',
+              padding: '0.5rem 1rem',
+              borderRadius: '8px',
+              border: '2px solid #2e7d32',
+              cursor: 'pointer'
+            }}
+          >
+            Registrarse
+          </button>
+        ) : (
+          <span style={{ color: 'white', fontWeight: 'bold' }}>👤 {nombre}</span>
+        )}
+      </div>
+
       </header>
 
       {/* Contenido principal */}
@@ -214,8 +269,9 @@ function App() {
             Vaciar carrito
           </button>
 
+          {nombre ? (
           <button
-            onClick={() => setMostrarFormulario(true)}
+            onClick={handleRegistrarVenta}
             style={{
               backgroundColor: '#388e3c',
               color: 'white',
@@ -230,6 +286,11 @@ function App() {
           >
             Finalizar Compra
           </button>
+        ) : (
+          <p style={{ marginTop: '1rem', color: '#888', fontSize: '0.9rem' }}>
+            Debes registrarte para finalizar la compra.
+          </p>
+        )}
 
         </aside>
       </div>
@@ -280,7 +341,7 @@ function App() {
               Registro del usuario
             </h2>
 
-            <form onSubmit={(e) => { e.preventDefault(); handleRegistrarVenta(); }}>
+            <form onSubmit={(e) => { e.preventDefault(); handleRegistroUsuario(); }}>
               {[
                 { label: "Nombre", value: nombre, onChange: setNombre },
                 { label: "Email", value: email, onChange: setEmail, type: "email" },

@@ -68,10 +68,37 @@ def guardar_carrito():
 
     return jsonify({'mensaje': 'Carrito guardado con éxito', 'idCarrito': id_carrito})
 
+# Registra al usuario
+@app.route('/api/registrar_usuario', methods=['POST'])
+def registrar_usuario():
+    data = request.json
+    nombre = data.get('nombre')
+    email = data.get('email')
+    contrasena = data.get('contrasena')
+    direccion = data.get('direccion')
+    tarjeta = data.get('tarjeta')
+
+    if not all([nombre, email, contrasena, direccion, tarjeta]):
+        return jsonify({'error': 'Faltan datos'}), 400
+
+    conn = mysql.connector.connect(**db_config)
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        INSERT INTO usuario (nombre, email, contrasena, direccion, tarjeta)
+        VALUES (%s, %s, %s, %s, %s)
+    """, (nombre, email, contrasena, direccion, tarjeta))
+
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    return jsonify({'mensaje': 'Usuario registrado con éxito'})
+
+
 # Guarda la venta
 @app.route('/api/registrar_venta', methods=['POST'])
 def registrar_venta():
-
     data = request.json 
     detalles = data.get('carrito')
     nombre = data.get('nombre')
@@ -83,34 +110,54 @@ def registrar_venta():
     conn = mysql.connector.connect(**db_config)
     cursor = conn.cursor()
 
-    cursor.execute("INSERT INTO carrito (nombre_usuario, estado) VALUES (%s, 'finalizado')", (nombre,))
-    conn.commit()
-    id_carrito = cursor.lastrowid
+    try:
+        # Buscar el ID del usuario por su nombre (idealmente usar email si hay duplicados)
+        cursor.execute("SELECT id FROM usuario WHERE nombre = %s", (nombre,))
+        usuario = cursor.fetchone()
+        if not usuario:
+            return jsonify({'error': 'Usuario no registrado'}), 400
 
-    for item in detalles:
+        id_usuario = usuario[0]
+
+        # Crear carrito vinculado al usuario
+        cursor.execute("INSERT INTO carrito (id_usuario, estado) VALUES (%s, 'finalizado')", (id_usuario,))
+        conn.commit()
+        id_carrito = cursor.lastrowid
+
+        # Insertar detalles del carrito
+        for item in detalles:
+            cursor.execute("""
+                INSERT INTO detallesCarrito (idCarrito, idProducto, cantidad)
+                VALUES (%s, %s, %s)
+            """, (id_carrito, item['idProducto'], item.get('cantidad', 1)))
+
+        # Calcular total de la compra
         cursor.execute("""
-            INSERT INTO detallesCarrito (idCarrito, idProducto, cantidad)
+            SELECT SUM(p.precio * dc.cantidad)
+            FROM detallesCarrito dc
+            JOIN productos p ON dc.idProducto = p.idProducto
+            WHERE dc.idCarrito = %s
+        """, (id_carrito,))
+        total = cursor.fetchone()[0] or 0.0
+
+        # Registrar venta
+        cursor.execute("""
+            INSERT INTO venta (carrito_id, numero_venta, total)
             VALUES (%s, %s, %s)
-        """, (id_carrito, item['idProducto'], item.get('cantidad', 1)))
+        """, (id_carrito, numero_venta, total))
 
-    cursor.execute("""
-        SELECT SUM(p.precio * dc.cantidad)
-        FROM detallesCarrito dc
-        JOIN productos p ON dc.idProducto = p.idProducto
-        WHERE dc.idCarrito = %s
-    """, (id_carrito,))
-    total = cursor.fetchone()[0] or 0.0
+        conn.commit()
+        return jsonify({'mensaje': 'Venta registrada', 'idCarrito': id_carrito})
 
-    cursor.execute("""
-        INSERT INTO venta (carrito_id, numero_venta, total)
-        VALUES (%s, %s, %s)
-    """, (id_carrito, numero_venta, total))
+    except Exception as e:
+        conn.rollback()
+        return jsonify({'error': f'Error al registrar venta: {str(e)}'}), 500
 
-    conn.commit()
-    cursor.close()
-    conn.close()
+    finally:
+        cursor.close()
+        conn.close()
 
-    return jsonify({'mensaje': 'Venta registrada', 'idCarrito': id_carrito})
+
 
 
 if __name__ == '__main__':
