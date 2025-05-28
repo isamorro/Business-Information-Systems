@@ -1,0 +1,4 @@
+- en frontend/tienda-frontend: npm run dev
+- en backend/: python app.py
+- para el acceso a MySQL: sudo mysql
+
